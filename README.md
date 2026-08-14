@@ -413,7 +413,7 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 ## 📸 Linux Mint Preview
 
 <p align="center">
-<img width="500" src="https://github.com/user-attachments/assets/d9a12f77-6fb3-4b87-a80d-207cc040fa36">
+  <img width="500" alt="image" src="https://github.com/user-attachments/assets/d0dc333c-afe9-47b1-8ebb-0297f56dbc88" />
 </p>
 
 ---

@@ -52,7 +52,13 @@ Up:     ${upspeed enx00e04c580ace}
 Link Speed: ${execi 10 bash -c 's=$(cat /sys/class/net/enx00e04c580ace/speed); if [ "$s" -ge 1000 ]; then echo "$((s/1000)) Gb/s"; else echo "${s} Mb/s"; fi'}
 
 ${color grey}FILE BROWSER:${color} \
-${if_match ${execi 10 systemctl is-active filebrowser | grep -c active} == 1}\
+${if_match ${execi 10 systemctl is-active filebrowser | grep -cx active} == 1}\
+${color green}ONLINE${color}\
+${else}\
+${color red}OFFLINE${color}\
+${endif}
+${color grey}QUAKEWORLD:${color} \
+${if_match ${execi 10 pgrep -f 'qwsv.*-port 28501' | wc -l} > 0}\
 ${color green}ONLINE${color}\
 ${else}\
 ${color red}OFFLINE${color}\

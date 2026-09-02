@@ -58,7 +58,7 @@ ${else}\
 ${color red}OFFLINE${color}\
 ${endif}
 ${color grey}QUAKEWORLD:${color} \
-${if_match ${execi 10 pgrep -f 'qwsv.*-port 28501' | wc -l} > 0}\
+${if_match ${execi 10 pgrep -f '[q]wsv.*-port 28501' | wc -l} > 0}\
 ${color green}ONLINE${color}\
 ${else}\
 ${color red}OFFLINE${color}\

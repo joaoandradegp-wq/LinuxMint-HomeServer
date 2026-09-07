@@ -36,11 +36,19 @@ MONITOR_SERVICE_UNIT_PATH = "/etc/systemd/system/sevastolink.service"
 MONITOR_INSTALL_STEPS = 10
 
 MONITOR_API_PY = '''from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 import uvicorn, psutil, socket, subprocess, platform, os, time
 from datetime import timedelta
 
 app = FastAPI(title="Sevastolink Monitor")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],       # ou restrinja ao IP/origem do painel se preferir
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
 
 def run(cmd):
     try:
@@ -301,7 +309,7 @@ def run_sudo(cmd):
             input=SUDO_PASSWORD + "\n",
             capture_output=True,
             text=True,
-            timeout=15
+            timeout=120
         )
 
     except Exception as e:

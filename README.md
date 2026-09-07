@@ -38,7 +38,7 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 | Version | Architecture | Release | Download |
 |----------|-------------|---------|----------|
 | Linux Mint 22.3 XFCE | **64-bit (x64)** | **v2.2** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x64-2.2.sh"><b>Click here</b></a> |
-| Server Panel + Server Monitor API | **Python 3** | **v1.1** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Server-Panel-1.1.py"><b>Click here</b></a> |
+| Server Panel + Server Monitor API | **Python 3** | **v1.1** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/SERVER_PANEL/server_panel.py"><b>Click here</b></a> |
 
 ---
 

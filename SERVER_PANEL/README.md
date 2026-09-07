@@ -626,75 +626,6 @@ The graphical interface automatically detects whether services are **ONLINE** or
 
 ---
 
-## 📂 Project Structure
-
-```text
-HomeServer/
-│
-├── server_panel.py
-│
-├── SevastolinkMonitor/
-│   ├── api.py
-│   └── .venv/
-│
-└── systemd/
-    └── sevastolink.service
-```
-
-The Server Monitor installation directory is created under the current user's home directory:
-
-```text
-~/SevastolinkMonitor
-```
-
-with the API stored as:
-
-```text
-~/SevastolinkMonitor/api.py
-```
-
----
-
-## 🎯 Target Use Cases
-
-<ul>
-
-<li>Lightweight home servers</li>
-
-<li>Old laptops and desktops</li>
-
-<li>Personal NAS systems</li>
-
-<li>Home file servers</li>
-
-<li>Always-on Linux machines</li>
-
-<li>Servers monitored through Rainmeter</li>
-
-<li>Desktop-based server administration</li>
-
-<li>Systems where terminal-only administration is inconvenient</li>
-
-</ul>
-
----
-
-## 📌 Access Points
-
-<p><b>FileBrowser</b></p>
-
-<pre><code>http://SERVER_IP:8080</code></pre>
-
-<p><b>Server Monitor API</b></p>
-
-<pre><code>http://SERVER_NAME:8181/api/rainmeter</code></pre>
-
-<p><b>Samba</b></p>
-
-<pre><code>smb://SERVER_IP/server</code></pre>
-
----
-
 ## ⚠️ Notes
 
 <ul>
@@ -738,14 +669,6 @@ and listens on:
 ```
 
 Therefore, the API should preferably be used inside a trusted network or protected through appropriate network controls when remote access is enabled.
-
----
-
-## 📸 Server Panel Preview
-
-<p align="center">
-  <img width="650" alt="Home Server Control Panel" src="https://github.com/user-attachments/assets/4a9a264e-706a-40cf-89d2-58ab36962737" />
-</p>
 
 ---
 

@@ -394,8 +394,6 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 
 <li>Designed for Linux Mint 22.3 XFCE (64-bit)</li>
 
-<li>Legacy 32-bit installer remains available for Linux Mint 19</li>
-
 <li>Requires sudo privileges</li>
 
 <li>Internet connection required during installation</li>

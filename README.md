@@ -27,7 +27,7 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 #### 🖥️ Server Panel + Server Monitor API Add-on
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/SERVER_PANEL/server_panel.py -o server_panel.py
+curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/SERVER_PANEL/install.sh | bash
 ```
 
 > **Recommended:** Install the **Server Panel** add-on to manage your Home Server components through a graphical interface.  

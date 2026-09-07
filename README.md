@@ -252,19 +252,27 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 
 <ul>
 
-<li>Integrated FastAPI monitoring service</li>
+<li>Integrated FastAPI monitoring server</li>
 
-<li>Designed for Rainmeter dashboards</li>
+<li>Real-time server metrics</li>
 
-<li>Plain-text API endpoint</li>
+<li>System information</li>
 
-<li>CPU, RAM, Swap & Disk metrics</li>
+<li>CPU monitoring</li>
 
-<li>Network traffic statistics</li>
+<li>RAM monitoring</li>
 
-<li>Service status reporting</li>
+<li>Swap monitoring</li>
 
-<li>Host information</li>
+<li>Disk monitoring</li>
+
+<li>Network traffic monitoring</li>
+
+<li>Service status monitoring</li>
+
+<li>Tailscale status</li>
+
+<li>Server uptime</li>
 
 </ul>
 

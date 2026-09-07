@@ -534,14 +534,16 @@ Icon=utilities-system-monitor
 URL=$USER_HOME/.conkyrc
 EOF
 
-cat > "$DESKTOP_DIR/ServerPanel.desktop" << EOF
+cat > "$DESKTOP_DIR/Server Panel.desktop" << EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
 Name=Server Panel
-Exec=python3 /home/phobos/Python_ServerPanel.py
-Icon=preferences-system
+Comment=Server Panel
+Exec="/home/phobos/Server Panel/dist/server_panel"
+Icon=unity-tweak-tool
 Terminal=false
+Categories=Utility;
 EOF
 
 chmod +x "$DESKTOP_DIR"/*.desktop 2>/dev/null

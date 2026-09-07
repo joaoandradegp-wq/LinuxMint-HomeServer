@@ -20,14 +20,14 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 #### 🟢 Linux Mint Home Server (64-bit)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x64-2.2.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x64.sh | sudo bash
 ```
 
 
 #### 🖥️ Server Panel + Server Monitor API Add-on
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Server-Panel-1.1.py -o Server-Panel.py
+curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/SERVER_PANEL/server_panel.py -o server_panel.py
 ```
 
 > **Recommended:** Install the **Server Panel** add-on to manage your Home Server components through a graphical interface.  
@@ -37,8 +37,8 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 
 | Version | Architecture | Release | Download |
 |----------|-------------|---------|----------|
-| Linux Mint 22.3 XFCE | **64-bit (x64)** | **v2.2** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x64-2.2.sh"><b>Click here</b></a> |
-| Server Panel + Server Monitor API | **Python 3** | **v1.1** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Server-Panel-1.1.py"><b>Click here</b></a> |
+| Linux Mint 22.3 XFCE | **64-bit (x64)** | **v2.2** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x64.sh"><b>Click here</b></a> |
+| Server Panel + Server Monitor API | **Python 3** | **v1.1** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/SERVER_PANEL/server_panel.py"><b>Click here</b></a> |
 
 ---
 

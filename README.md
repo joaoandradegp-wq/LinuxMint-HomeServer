@@ -378,18 +378,6 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 
 <pre><code>http://SERVER_NAME:8181/api/rainmeter</code></pre>
 
-<p><b>Tailscale</b></p>
-
-<pre><code>Private VPN Network</code></pre>
-
-<p><b>Remote Desktop</b></p>
-
-<pre><code>AnyDesk / x11vnc</code></pre>
-
-<p><b>Server Panel</b></p>
-
-<pre><code>python3 ~/Python_ServerPanel.py</code></pre>
-
 ---
 
 ## ⚠️ Notes

@@ -62,6 +62,32 @@ echo ""
 echo "Installation complete!"
 echo "Binary: $INSTALL_DIR/server_panel"
 
+# ----------------------------------------------------------------------
+# Desktop icon
+# ----------------------------------------------------------------------
+DESKTOP_DIR="$(xdg-user-dir DESKTOP 2>/dev/null || echo "$HOME/Desktop")"
+mkdir -p "$DESKTOP_DIR"
+DESKTOP_FILE="$DESKTOP_DIR/server_panel.desktop"
+
+cat > "$DESKTOP_FILE" << EOL
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Server Panel
+Comment=Server Panel
+Exec="$INSTALL_DIR/server_panel"
+Icon=unity-tweak-tool
+Terminal=false
+Categories=Utility;
+EOL
+
+chmod +x "$DESKTOP_FILE"
+# Marks the .desktop file as trusted so it can be launched with a double-click
+# on file managers that check this (Nautilus/GNOME, Cinnamon/Nemo).
+gio set "$DESKTOP_FILE" metadata::trusted true 2>/dev/null || true
+
+echo "Desktop icon: $DESKTOP_FILE"
+
 if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
     echo ""
     echo "WARNING: $INSTALL_DIR is not in your PATH."

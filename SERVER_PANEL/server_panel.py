@@ -38,7 +38,7 @@ MONITOR_INSTALL_STEPS = 10
 MONITOR_API_PY = '''from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
-import uvicorn, psutil, socket, subprocess, platform, os, time
+import uvicorn, psutil, socket, subprocess, platform, os, time, re
 from datetime import timedelta
 
 app = FastAPI(title="Sevastolink Monitor")
@@ -58,6 +58,16 @@ def run(cmd):
 
 def svc(name):
     return "ONLINE" if run(f"systemctl is-active {name}")=="active" else "OFFLINE"
+
+def qw_status():
+    # QWSV não roda como serviço systemd (processo solto, iniciado pelo
+    # qw_panel.py), e a porta é configurável -> detecta pelo cmdline do
+    # processo em execução, igual o próprio qw_panel.py faz no Linux.
+    out = run("pgrep -af '[q]wsv.*-port'")
+    if not out:
+        return "OFFLINE", ""
+    m = re.search(r'-port\\s+(\\d+)', out)
+    return "ONLINE", (m.group(1) if m else "")
 
 def cpu_model():
     return run("cat /proc/cpuinfo | grep 'model name' | head -1 | cut -d ':' -f2").strip()
@@ -113,6 +123,7 @@ def rain():
     sw=psutil.swap_memory()
     dk=psutil.disk_usage("/")
     down,up=speed()
+    qw_state,qw_port=qw_status()
     uptime=str(timedelta(seconds=int(time.time()-psutil.boot_time())))
     tsip=run("ip -4 addr show tailscale0 | grep inet | awk '{print $2}' | cut -d/ -f1") or "Offline"
     lines=[
@@ -137,6 +148,8 @@ def rain():
         f"UPLOAD={up}",
         f"LINK_SPEED={linkspeed()}",
         f"FILEBROWSER={svc('filebrowser')}",
+        f"QUAKEWORLD={qw_state}",
+        f"QUAKEWORLD_PORT={qw_port}",
         f"TAILSCALE={svc('tailscaled')}",
         f"TAILSCALE_IP={tsip}",
         f"UPTIME={uptime}"

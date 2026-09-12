@@ -32,12 +32,13 @@ MONITOR_PORT = 8181
 MONITOR_INSTALL_DIR = Path.home() / "SevastolinkMonitor"
 MONITOR_VENV_DIR = MONITOR_INSTALL_DIR / ".venv"
 MONITOR_API_PATH = MONITOR_INSTALL_DIR / "api.py"
+MONITOR_WEB_DIR = MONITOR_INSTALL_DIR / "web"
 MONITOR_SERVICE_UNIT_PATH = "/etc/systemd/system/sevastolink.service"
 MONITOR_INSTALL_STEPS = 10
 
 MONITOR_API_PY = '''from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, HTMLResponse
 import uvicorn, psutil, socket, subprocess, platform, os, time, re
 from datetime import timedelta
 
@@ -49,6 +50,20 @@ app.add_middleware(
     allow_methods=["GET"],
     allow_headers=["*"],
 )
+
+# ============================================================
+# PÁGINA WEB
+# ============================================================
+
+@app.get("/monitor", response_class=HTMLResponse)
+def monitor():
+    with open("web/index.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+
+# ============================================================
+# FUNÇÕES DA API
+# ============================================================
 
 def run(cmd):
     try:
@@ -349,6 +364,20 @@ def service_is_active(name):
             text=True
         )
         return result.stdout.strip() == "active"
+
+    except Exception:
+        return False
+
+
+def service_is_installed(name):
+
+    try:
+        result = subprocess.run(
+            ["systemctl", "list-unit-files", name + ".service"],
+            capture_output=True,
+            text=True
+        )
+        return name in result.stdout
 
     except Exception:
         return False
@@ -891,28 +920,35 @@ def build_monitor_tab(parent):
     btn_monitor_install.pack(side="left")
 
 
-def update_monitor_buttons(active):
+def update_monitor_buttons(installed, active):
 
-    if active:
+    if not installed:
+        btn_monitor_install.state(["!disabled"])
+        btn_monitor_refresh.state(["disabled"])
+        btn_monitor_restart.state(["disabled"])
+        btn_monitor_stop.state(["disabled"])
+        btn_monitor_start.state(["disabled"])
+    elif active:
         btn_monitor_install.state(["disabled"])
         btn_monitor_refresh.state(["!disabled"])
         btn_monitor_restart.state(["!disabled"])
         btn_monitor_stop.state(["!disabled"])
         btn_monitor_start.state(["disabled"])
     else:
-        btn_monitor_install.state(["!disabled"])
-        btn_monitor_refresh.state(["disabled"])
+        btn_monitor_install.state(["disabled"])
+        btn_monitor_refresh.state(["!disabled"])
         btn_monitor_restart.state(["disabled"])
         btn_monitor_stop.state(["disabled"])
-        btn_monitor_start.state(["disabled"])
+        btn_monitor_start.state(["!disabled"])
 
 
 def refresh_monitor_status():
 
+    installed = service_is_installed(MONITOR_SERVICE)
     active = service_is_active(MONITOR_SERVICE)
 
     set_status_badge(lbl_monitor_status, active)
-    update_monitor_buttons(active)
+    update_monitor_buttons(installed, active)
 
 
 def install_monitor():
@@ -971,6 +1007,8 @@ def run_monitor_install():
     try:
         MONITOR_INSTALL_DIR.mkdir(parents=True, exist_ok=True)
         MONITOR_API_PATH.write_text(MONITOR_API_PY)
+
+        MONITOR_WEB_DIR.mkdir(parents=True, exist_ok=True)
 
     except OSError as e:
         return False, str(e)

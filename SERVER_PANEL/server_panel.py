@@ -1219,7 +1219,7 @@ def on_tab_changed(event):
     tab_text = event.widget.tab(selected, "text")
 
     if tab_text == "Server Monitor":
-        fetch_monitor_data()
+        refresh_monitor_status()
         root.after(200, ensure_monitor_files)
 
 

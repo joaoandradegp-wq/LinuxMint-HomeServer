@@ -104,8 +104,18 @@ def cpu_temp():
     return None
 
 def iface():
+    try:
+        out = subprocess.check_output(
+            ["ip", "route", "show", "default"], text=True
+        )
+        m = re.search(r"dev\\s+(\\S+)", out)
+        if m:
+            return m.group(1)
+    except Exception:
+        pass
+
     for n,s in psutil.net_if_stats().items():
-        if s.isup and n!="lo" and not n.startswith("tailscale"):
+        if s.isup and n!="lo" and not n.startswith(("tailscale","docker","br-","veth","virbr")):
             return n
     return ""
 
@@ -950,22 +960,35 @@ def update_monitor_buttons(installed, active):
 
 
 def ensure_monitor_files():
-    """Auto-heals web/ and web.bat if they were accidentally deleted."""
+    """Auto-heals api.py, web/ and web.bat if they were accidentally deleted.
+    Returns (recreated, error) where recreated is a list of filenames that
+    were restored and error is None or a message string."""
+
+    recreated = []
+
+    if not service_is_installed(MONITOR_SERVICE):
+        return recreated, None
 
     try:
-        if not service_is_installed(MONITOR_SERVICE):
-            return
+        if not MONITOR_API_PATH.exists():
+            MONITOR_INSTALL_DIR.mkdir(parents=True, exist_ok=True)
+            MONITOR_API_PATH.write_text(MONITOR_API_PY)
+            recreated.append("api.py")
 
         if not MONITOR_WEB_DIR.exists():
             MONITOR_WEB_DIR.mkdir(parents=True, exist_ok=True)
+            recreated.append("web/")
 
         if not MONITOR_WEB_BAT_PATH.exists():
             MONITOR_WEB_BAT_PATH.write_text(
                 MONITOR_WEB_BAT_TEMPLATE.format(host=socket.gethostname())
             )
+            recreated.append("web.bat")
 
-    except OSError:
-        pass
+        return recreated, None
+
+    except OSError as e:
+        return recreated, str(e)
 
 
 def refresh_monitor_status():
@@ -1127,8 +1150,18 @@ WantedBy=multi-user.target
 
 def start_monitor():
 
+    recreated, err = ensure_monitor_files()
+
+    if err:
+        messagebox.showerror(
+            "Error",
+            f"Failed to restore monitor files before starting:\n{err}"
+        )
+        return
+
     if start_service(MONITOR_SERVICE):
         refresh_monitor_status()
+        root.after(1000, lambda: fetch_monitor_data_retry(4))
 
 
 def stop_monitor():
@@ -1141,6 +1174,7 @@ def restart_monitor():
 
     if restart_service(MONITOR_SERVICE):
         refresh_monitor_status()
+        root.after(1000, lambda: fetch_monitor_data_retry(4))
 
 
 def fetch_monitor_data():
@@ -1155,7 +1189,7 @@ def fetch_monitor_data():
 
     except Exception:
         refresh_monitor_status()
-        return
+        return False
 
     for line in data.strip().splitlines():
 
@@ -1164,6 +1198,16 @@ def fetch_monitor_data():
             tree_monitor.insert("", "end", values=(key, value))
 
     refresh_monitor_status()
+    return True
+
+
+def fetch_monitor_data_retry(attempts_left):
+
+    if fetch_monitor_data():
+        return
+
+    if attempts_left > 0:
+        root.after(1000, lambda: fetch_monitor_data_retry(attempts_left - 1))
 
 ########################################################
 # TAB CHANGE - AUTO REFRESH SERVER MONITOR

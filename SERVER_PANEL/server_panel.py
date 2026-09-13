@@ -33,8 +33,15 @@ MONITOR_INSTALL_DIR = Path.home() / "SevastolinkMonitor"
 MONITOR_VENV_DIR = MONITOR_INSTALL_DIR / ".venv"
 MONITOR_API_PATH = MONITOR_INSTALL_DIR / "api.py"
 MONITOR_WEB_DIR = MONITOR_INSTALL_DIR / "web"
+MONITOR_WEB_BAT_PATH = MONITOR_INSTALL_DIR / "web.bat"
 MONITOR_SERVICE_UNIT_PATH = "/etc/systemd/system/sevastolink.service"
 MONITOR_INSTALL_STEPS = 10
+
+MONITOR_WEB_BAT_TEMPLATE = (
+    '@echo off\r\n'
+    'start "" "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe" '
+    '--app="http://{host}:8181/monitor" --kiosk\r\n'
+)
 
 MONITOR_API_PY = '''from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -942,6 +949,25 @@ def update_monitor_buttons(installed, active):
         btn_monitor_start.state(["!disabled"])
 
 
+def ensure_monitor_files():
+    """Auto-heals web/ and web.bat if they were accidentally deleted."""
+
+    try:
+        if not service_is_installed(MONITOR_SERVICE):
+            return
+
+        if not MONITOR_WEB_DIR.exists():
+            MONITOR_WEB_DIR.mkdir(parents=True, exist_ok=True)
+
+        if not MONITOR_WEB_BAT_PATH.exists():
+            MONITOR_WEB_BAT_PATH.write_text(
+                MONITOR_WEB_BAT_TEMPLATE.format(host=socket.gethostname())
+            )
+
+    except OSError:
+        pass
+
+
 def refresh_monitor_status():
 
     installed = service_is_installed(MONITOR_SERVICE)
@@ -1009,6 +1035,10 @@ def run_monitor_install():
         MONITOR_API_PATH.write_text(MONITOR_API_PY)
 
         MONITOR_WEB_DIR.mkdir(parents=True, exist_ok=True)
+
+        MONITOR_WEB_BAT_PATH.write_text(
+            MONITOR_WEB_BAT_TEMPLATE.format(host=socket.gethostname())
+        )
 
     except OSError as e:
         return False, str(e)
@@ -1146,6 +1176,7 @@ def on_tab_changed(event):
 
     if tab_text == "Server Monitor":
         fetch_monitor_data()
+        root.after(200, ensure_monitor_files)
 
 
 notebook.bind("<<NotebookTabChanged>>", on_tab_changed)

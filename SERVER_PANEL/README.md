@@ -168,7 +168,7 @@ Each configured disk displays its usage percentage, usage bar, used space and to
 
 <p><b>API:</b></p>
 
-<pre><code>http://SERVER_NAME:8181/api/rainmeter</code></pre>
+<pre><code>http://SERVER_NAME:8181/api/monitor</code></pre>
 
 </td>
 
@@ -356,9 +356,9 @@ OFFLINE → Start available
 
 ---
 
-## 📡 Sevastolink Server Monitor
+## 📡 API Server Monitor
 
-The **Server Monitor** is an integrated FastAPI service designed to expose lightweight server statistics to external monitoring systems such as **Rainmeter**.
+The **API Server Monitor** is an integrated FastAPI service designed to expose lightweight server statistics to external monitoring systems such as **Rainmeter**.
 
 The API runs on:
 
@@ -369,7 +369,7 @@ Port: 8181
 Endpoint:
 
 ```text
-http://SERVER_NAME:8181/api/rainmeter
+http://SERVER_NAME:8181/api/monitor
 ```
 
 The endpoint returns plain-text key/value data, making it easy to consume from monitoring applications and desktop widgets.
@@ -453,14 +453,14 @@ These values are generated using **psutil**, system commands and Linux system in
 
 ---
 
-## 📡 Rainmeter Integration
+## 📡 Dashboard Integration
 
-The API was designed to provide a simple data source for a Rainmeter skin.
+The API was designed to provide a simple data source for a system dashboard.
 
 Example endpoint:
 
 ```text
-http://SERVER_NAME:8181/api/rainmeter
+http://SERVER_NAME:8181/api/monitor
 ```
 
 Example response:
@@ -525,22 +525,22 @@ The application displays installation progress through a graphical progress bar.
                              │
                              ▼
                   ┌──────────────────────┐
-                  │ Sevastolink Monitor  │
-                  │      FastAPI         │
+                  │     API Monitor      │
+                  │       FastAPI        │
                   └──────────┬───────────┘
                              │
                        Port 8181
                              │
                              ▼
               ┌─────────────────────────────┐
-              │      /api/rainmeter         │
+              │        /api/monitor         │
               └──────────────┬──────────────┘
                              │
              ┌───────────────┴───────────────┐
              │                               │
              ▼                               ▼
-       Rainmeter Skin                 Control Panel
-       / Dashboard                    Live Metrics
+        Dashboards                     Control Panel
+                                       Live Metrics
 ```
 
 ---
@@ -556,12 +556,12 @@ systemctl start filebrowser
 systemctl stop filebrowser
 ```
 
-### Sevastolink Monitor
+### API Monitor
 
 ```bash
-systemctl start sevastolink
-systemctl stop sevastolink
-systemctl restart sevastolink
+systemctl start Monitor
+systemctl stop Monitor
+systemctl restart Monitor
 ```
 
 The graphical interface automatically detects whether services are **ONLINE** or **OFFLINE** and updates the available controls accordingly.
@@ -690,16 +690,16 @@ Linux System
         psutil / Linux
               │
               ▼
-      Sevastolink Monitor
+          API Monitor
               │
           HTTP :8181
               │
               ▼
-       /api/rainmeter
+         /api/monitor
               │
        ┌──────┴──────┐
        ▼             ▼
-   Rainmeter    Server Panel
+   Dashboard    Server Panel
 ```
 
 ---

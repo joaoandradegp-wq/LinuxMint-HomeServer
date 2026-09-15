@@ -26,15 +26,15 @@ STATUS_ERROR = "#c0392b"
 SUDO_PASSWORD = None
 
 FILEBROWSER_SERVICE = "filebrowser"
-MONITOR_SERVICE = "sevastolink"
+MONITOR_SERVICE = "monitor"
 MONITOR_PORT = 8181
 
-MONITOR_INSTALL_DIR = Path.home() / "SevastolinkMonitor"
+MONITOR_INSTALL_DIR = Path.home() / "Monitor"
 MONITOR_VENV_DIR = MONITOR_INSTALL_DIR / ".venv"
 MONITOR_API_PATH = MONITOR_INSTALL_DIR / "api.py"
 MONITOR_WEB_DIR = MONITOR_INSTALL_DIR / "web"
 MONITOR_WEB_BAT_PATH = MONITOR_INSTALL_DIR / "web.bat"
-MONITOR_SERVICE_UNIT_PATH = "/etc/systemd/system/sevastolink.service"
+MONITOR_SERVICE_UNIT_PATH = "/etc/systemd/system/monitor.service"
 MONITOR_INSTALL_STEPS = 10
 
 MONITOR_WEB_BAT_TEMPLATE = (
@@ -49,11 +49,11 @@ from fastapi.responses import PlainTextResponse, HTMLResponse
 import uvicorn, psutil, socket, subprocess, platform, os, time, re
 from datetime import timedelta
 
-app = FastAPI(title="Sevastolink Monitor")
+app = FastAPI(title="monitor Monitor")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],       # ou restrinja ao IP/origem do painel se preferir
+    allow_origins=["*"],      
     allow_methods=["GET"],
     allow_headers=["*"],
 )
@@ -82,9 +82,6 @@ def svc(name):
     return "ONLINE" if run(f"systemctl is-active {name}")=="active" else "OFFLINE"
 
 def qw_status():
-    # QWSV não roda como serviço systemd (processo solto, iniciado pelo
-    # qw_panel.py), e a porta é configurável -> detecta pelo cmdline do
-    # processo em execução, igual o próprio qw_panel.py faz no Linux.
     out = run("pgrep -af '[q]wsv.*-port'")
     if not out:
         return "OFFLINE", ""
@@ -148,7 +145,7 @@ def linkspeed():
     except:
         return "Unknown"
 
-@app.get("/api/rainmeter", response_class=PlainTextResponse)
+@app.get("/api/monitor", response_class=PlainTextResponse)
 def rain():
     cpu=psutil.cpu_percent(interval=0.5)
     mem=psutil.virtual_memory()
@@ -336,9 +333,6 @@ def ask_sudo_password():
 
 
 def run_sudo(cmd):
-    """Runs a command with sudo, feeding the cached password via stdin
-    so the user is never dropped into a terminal prompt."""
-
     global SUDO_PASSWORD
 
     if SUDO_PASSWORD is None:
@@ -893,7 +887,7 @@ def build_monitor_tab(parent):
     content, toolbar = build_page(
         parent,
         "Server Monitor",
-        "Controls the Sevastolink API used to feed the Rainmeter skin."
+        "Controls the monitoring API used to feed a system dashboard."
     )
 
     info = ttk.Frame(content)
@@ -904,7 +898,7 @@ def build_monitor_tab(parent):
 
     ttk.Label(
         info,
-        text=f"Endpoint: http://{socket.gethostname()}:{MONITOR_PORT}/api/rainmeter"
+        text=f"Endpoint: http://{socket.gethostname()}:{MONITOR_PORT}/api/monitor"
     ).pack(side="left", padx=(12, 0))
 
     progress_monitor = ttk.Progressbar(
@@ -1005,7 +999,7 @@ def install_monitor():
     proceed = messagebox.askyesno(
         "Install Monitor",
         "This will install python3-venv, curl, the FastAPI dependencies, "
-        "and register the \"sevastolink\" service so the Server Monitor "
+        "and register the \"monitor\" service so the Server Monitor "
         "endpoint comes online.\n\nContinue?"
     )
 
@@ -1036,10 +1030,6 @@ def advance_monitor_progress(step, description):
 
 
 def run_monitor_install():
-    """Reproduces Script_Server-Monitor-1.0.sh: installs the OS packages,
-    creates the venv, writes api.py, and registers/starts the systemd
-    service that exposes the Rainmeter endpoint."""
-
     advance_monitor_progress(1, "updating packages")
     ok, msg = run_sudo(["apt-get", "update"])
 
@@ -1103,7 +1093,7 @@ def run_monitor_install():
     python_bin = MONITOR_VENV_DIR / "bin" / "python"
 
     unit = f"""[Unit]
-Description=Sevastolink Monitor API
+Description=monitor Monitor API
 After=network-online.target
 Wants=network-online.target
 
@@ -1120,9 +1110,9 @@ WantedBy=multi-user.target
 """
 
     advance_monitor_progress(7, "writing service file")
-    Path("/tmp/sevastolink.service").write_text(unit)
+    Path("/tmp/monitor.service").write_text(unit)
 
-    ok, msg = run_sudo(["cp", "/tmp/sevastolink.service", MONITOR_SERVICE_UNIT_PATH])
+    ok, msg = run_sudo(["cp", "/tmp/monitor.service", MONITOR_SERVICE_UNIT_PATH])
 
     if not ok:
         return False, msg
@@ -1181,7 +1171,7 @@ def fetch_monitor_data():
 
     tree_monitor.delete(*tree_monitor.get_children())
 
-    url = f"http://127.0.0.1:{MONITOR_PORT}/api/rainmeter"
+    url = f"http://127.0.0.1:{MONITOR_PORT}/api/monitor"
 
     try:
         with urllib.request.urlopen(url, timeout=3) as response:

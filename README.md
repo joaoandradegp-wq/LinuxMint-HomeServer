@@ -276,7 +276,7 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 
 </ul>
 
-<pre><code>http://SERVER_NAME:8181/api/rainmeter</code></pre>
+<pre><code>http://SERVER_NAME:8181/api/monitor</code></pre>
 
 </td>
 
@@ -364,7 +364,7 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 
 <li>Remote access node</li>
 
-<li>Rainmeter monitoring server</li>
+<li>API monitoring server</li>
 
 <li>Low-power always-on machine</li>
 
@@ -384,7 +384,7 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 
 <p><b>Server Monitor API</b></p>
 
-<pre><code>http://SERVER_NAME:8181/api/rainmeter</code></pre>
+<pre><code>http://SERVER_NAME:8181/api/monitor</code></pre>
 
 ---
 

@@ -1,8 +1,8 @@
-<h1 align="center">🖥️ Control Panel</h1>
+<h1 align="center">🖥️ Home Server Control Panel</h1>
 
 <p align="center">
-Control Panel is a lightweight graphical management application designed to control and monitor essential components of a Linux home server.
-It provides a simple Tkinter interface for managing Samba shares, Conky disk monitoring, FileBrowser, and a Server Monitor API.
+Home Server Control Panel is a lightweight graphical management application designed to manage and monitor essential components of a Linux home server.
+It provides a simple Tkinter interface for managing Samba shares, Conky disk monitoring, FileBrowser, and an integrated Server Monitor API.
 </p>
 
 <p align="center">
@@ -17,16 +17,22 @@ It provides a simple Tkinter interface for managing Samba shares, Conky disk mon
 
 ## ✨ Overview
 
-The **Control Panel** provides a graphical interface for managing common services and monitoring a lightweight Linux home server.
+The <b>Home Server Control Panel</b> provides a graphical interface for managing common services and configuration files on a lightweight Linux home server.
 
-The application currently provides four main management areas:
+The application contains four main management areas:
 
-* 📁 Samba Shares
-* 📊 Conky Disks
-* 🌐 FileBrowser
-* 📡 Server Monitor
+<ul>
+<li>📁 Samba Shares</li>
+<li>📊 Conky Disks</li>
+<li>🌐 FileBrowser</li>
+<li>📡 Server Monitor</li>
+</ul>
 
-The main application is built with **Python and Tkinter**, while the monitoring API uses **FastAPI, Uvicorn and psutil**.
+The graphical interface is built with <b>Python and Tkinter</b>.
+
+The integrated monitoring service uses <b>FastAPI, Uvicorn and psutil</b>, running as a dedicated <code>systemd</code> service on port <b>8181</b>.
+
+The application also provides automatic installation and basic recovery of the Server Monitor components.
 
 ---
 
@@ -41,49 +47,42 @@ The main application is built with **Python and Tkinter**, while the monitoring 
 <h3>📁 Samba Shares</h3>
 
 <ul>
-
-<li>View configured Samba shares</li>
-
+<li>Read configured Samba shares</li>
 <li>Add new network shares</li>
-
 <li>Edit existing shares</li>
-
-<li>Delete shares</li>
-
+<li>Delete shares from the graphical list</li>
 <li>Configure shared folder paths</li>
-
 <li>Create missing directories automatically</li>
-
-<li>Apply directory permissions</li>
-
-<li>Restart Samba after configuration</li>
-
+<li>Apply <code>755</code> directory permissions</li>
+<li>Generate and apply the Samba configuration</li>
+<li>Restart the Samba service automatically after saving</li>
+<li>Double-click a share to edit it</li>
 </ul>
 
 <p><b>Configuration:</b></p>
 
 <pre><code>/etc/samba/smb.conf</code></pre>
 
+<p><b>Service:</b></p>
+
+<pre><code>smbd</code></pre>
+
 </td>
 
 <td width="50%" valign="top">
 
-<h3>📊 Conky Manager</h3>
+<h3>📊 Conky Disks</h3>
 
 <ul>
-
-<li>View disks configured in Conky</li>
-
+<li>Read disks configured in Conky</li>
 <li>Add monitored disks</li>
-
-<li>Edit disk names and mount points</li>
-
-<li>Remove disks from monitoring</li>
-
+<li>Edit disk names</li>
+<li>Edit mount points</li>
+<li>Remove disks from the configuration</li>
+<li>Automatically generate disk monitoring lines</li>
 <li>Update <code>~/.conkyrc</code></li>
-
 <li>Restart Conky after changes</li>
-
+<li>Double-click a disk to edit it</li>
 </ul>
 
 <p><b>Configuration:</b></p>
@@ -101,28 +100,22 @@ The main application is built with **Python and Tkinter**, while the monitoring 
 <h3>🌐 FileBrowser</h3>
 
 <ul>
-
-<li>Display the configured FileBrowser root path</li>
-
+<li>Read the configured FileBrowser root path</li>
 <li>Detect the FileBrowser systemd service</li>
-
-<li>Show service status</li>
-
+<li>Display service status</li>
 <li>Start FileBrowser</li>
-
 <li>Stop FileBrowser</li>
-
 <li>Refresh service status</li>
-
+<li>Automatically enable or disable Start/Stop controls according to the service state</li>
 </ul>
 
 <p><b>Service:</b></p>
 
 <pre><code>filebrowser</code></pre>
 
-<p><b>Default access:</b></p>
+<p><b>Root path:</b></p>
 
-<pre><code>http://SERVER_IP:8080</code></pre>
+<p>Read from the FileBrowser systemd unit using its <code>-r</code> parameter.</p>
 
 </td>
 
@@ -131,27 +124,19 @@ The main application is built with **Python and Tkinter**, while the monitoring 
 <h3>📡 Server Monitor</h3>
 
 <ul>
-
-<li>Integrated FastAPI monitoring server</li>
-
-<li>CPU monitoring</li>
-
-<li>RAM and Swap monitoring</li>
-
-<li>Disk monitoring</li>
-
-<li>Network monitoring</li>
-
-<li>Service status monitoring</li>
-
-<li>Tailscale status</li>
-
-<li>Server uptime</li>
-
-<li>QuakeWorld server detection</li>
-
-<li>QuakeWorld server port detection</li>
-
+<li>Install the monitoring environment automatically</li>
+<li>Create a Python virtual environment</li>
+<li>Install FastAPI, Uvicorn and psutil</li>
+<li>Create a systemd monitoring service</li>
+<li>Start, stop and restart the monitoring service</li>
+<li>Display real-time monitoring data</li>
+<li>Monitor CPU, RAM and Swap</li>
+<li>Monitor disk usage</li>
+<li>Monitor network traffic</li>
+<li>Display network link speed and IP address</li>
+<li>Monitor FileBrowser and Tailscale services</li>
+<li>Detect QuakeWorld Server status and port</li>
+<li>Display server uptime</li>
 </ul>
 
 <p><b>API:</b></p>
@@ -166,107 +151,320 @@ The main application is built with **Python and Tkinter**, while the monitoring 
 
 ---
 
+## 📡 Server Monitor
+
+The <b>Server Monitor</b> is an integrated FastAPI service designed to provide system information to external dashboards and monitoring applications.
+
+The Control Panel can install the complete monitoring environment directly from the graphical interface.
+
+The installation process performs the following steps:
+
+<pre><code>1. Update APT package information
+2. Install Python 3, python3-venv, python3-pip and curl
+3. Create api.py and monitoring directories
+4. Create the Python virtual environment
+5. Upgrade pip
+6. Install FastAPI, Uvicorn and psutil
+7. Create the systemd service
+8. Reload systemd
+9. Enable the monitor service
+10. Start the monitor service</code></pre>
+
+The installation progress is displayed directly in the Control Panel.
+
+The monitoring service is registered as:
+
+<pre><code>monitor.service</code></pre>
+
+The service runs automatically and is configured to restart if it stops.
+
+---
+
+## 📊 Monitoring API
+
+The Server Monitor exposes a plain-text endpoint:
+
+<pre><code>http://SERVER_NAME:8181/api/monitor</code></pre>
+
+The API returns one metric per line using a simple:
+
+<pre><code>KEY=VALUE</code></pre>
+
+format.
+
+The exact values depend on the hardware, network configuration and services running on the server.
+
+---
+
+## 📈 Available Metrics
+
+<table>
+
+<tr>
+<td><b>HOSTNAME</b></td>
+<td>Linux hostname</td>
+</tr>
+
+<tr>
+<td><b>CPU_MODEL</b></td>
+<td>Detected CPU model</td>
+</tr>
+
+<tr>
+<td><b>CPU_CORES</b></td>
+<td>Physical CPU cores</td>
+</tr>
+
+<tr>
+<td><b>CPU_THREADS</b></td>
+<td>Logical CPU threads</td>
+</tr>
+
+<tr>
+<td><b>CPU_FREQ</b></td>
+<td>Current CPU frequency in GHz</td>
+</tr>
+
+<tr>
+<td><b>CPU_TEMP</b></td>
+<td>Detected CPU/system temperature when available</td>
+</tr>
+
+<tr>
+<td><b>CPU_USAGE</b></td>
+<td>Current CPU utilization percentage</td>
+</tr>
+
+<tr>
+<td><b>RAM_USED</b></td>
+<td>Used system memory in GB</td>
+</tr>
+
+<tr>
+<td><b>RAM_TOTAL</b></td>
+<td>Total system memory in GB</td>
+</tr>
+
+<tr>
+<td><b>RAM_PERCENT</b></td>
+<td>Memory utilization percentage</td>
+</tr>
+
+<tr>
+<td><b>SWAP_USED</b></td>
+<td>Used Swap memory in GB</td>
+</tr>
+
+<tr>
+<td><b>SWAP_TOTAL</b></td>
+<td>Total Swap memory in GB</td>
+</tr>
+
+<tr>
+<td><b>SWAP_PERCENT</b></td>
+<td>Swap utilization percentage</td>
+</tr>
+
+<tr>
+<td><b>DISK_USED</b></td>
+<td>Used space on the root filesystem</td>
+</tr>
+
+<tr>
+<td><b>DISK_TOTAL</b></td>
+<td>Total space on the root filesystem</td>
+</tr>
+
+<tr>
+<td><b>DISK_PERCENT</b></td>
+<td>Root filesystem utilization</td>
+</tr>
+
+<tr>
+<td><b>LAN_IP</b></td>
+<td>IPv4 address of the detected primary network interface</td>
+</tr>
+
+<tr>
+<td><b>DOWNLOAD</b></td>
+<td>Current download rate in MB/s</td>
+</tr>
+
+<tr>
+<td><b>UPLOAD</b></td>
+<td>Current upload rate in MB/s</td>
+</tr>
+
+<tr>
+<td><b>LINK_SPEED</b></td>
+<td>Detected network link speed</td>
+</tr>
+
+<tr>
+<td><b>FILEBROWSER</b></td>
+<td>FileBrowser systemd service status</td>
+</tr>
+
+<tr>
+<td><b>QUAKEWORLD</b></td>
+<td>QuakeWorld Server process status</td>
+</tr>
+
+<tr>
+<td><b>QUAKEWORLD_PORT</b></td>
+<td>Detected QuakeWorld Server port</td>
+</tr>
+
+<tr>
+<td><b>TAILSCALE</b></td>
+<td>Tailscale systemd service status</td>
+</tr>
+
+<tr>
+<td><b>TAILSCALE_IP</b></td>
+<td>Tailscale IPv4 address</td>
+</tr>
+
+<tr>
+<td><b>UPTIME</b></td>
+<td>Server uptime</td>
+</tr>
+
+</table>
+
+---
+
 ## 🎮 QuakeWorld Monitoring
 
-The **Server Monitor** can detect the QuakeWorld Server process running on the system.
+The <b>Server Monitor</b> can detect the QuakeWorld Server process running on the system.
 
-The monitoring API provides two additional fields:
+Detection is performed by looking for the:
 
-```text
-QUAKEWORLD
-QUAKEWORLD_PORT
-```
+<pre><code>qwsv</code></pre>
+
+process together with its:
+
+<pre><code>-port</code></pre>
+
+parameter.
+
+The API exposes:
+
+<pre><code>QUAKEWORLD
+QUAKEWORLD_PORT</code></pre>
 
 Example:
 
-```text
-QUAKEWORLD=ONLINE
-QUAKEWORLD_PORT=27500
-```
+<pre><code>QUAKEWORLD=ONLINE
+QUAKEWORLD_PORT=27500</code></pre>
 
-The detection is based on the **QuakeWorld Server (`qwsv`) process** and its configured port.
 
-The Home Server Control Panel is responsible for **monitoring** the QuakeWorld server.
+The Home Server Control Panel is responsible only for <b>monitoring</b> the QuakeWorld server.
 
 For server administration, configuration, start and stop controls, use the dedicated project:
   <a href="https://github.com/joaoandradegp-wq/DOS-Game_Launcher/tree/main/DEV/qw_server">QuakeWorld Server Panel</a>
 
 ---
 
-## 🖥️ Application Interface
+## 🔄 Server Monitor Auto Refresh
 
-The Control Panel uses a tabbed interface containing four management areas.
+When the <b>Server Monitor</b> tab is selected, the application automatically checks the monitoring service status.
 
-```text
-┌────────────────────────────────────────────────────────┐
-│              Home Server Control Panel                 │
-├──────────┬───────────┬─────────────┬───────────────────┤
-│  Shares  │   Conky   │ FileBrowser │  Server Monitor   │
-├──────────┴───────────┴─────────────┴───────────────────┤
-│                                                        │
-│                   Module Content                       │
-│                                                        │
-├────────────────────────────────────────────────────────┤
-│                   Action Toolbar                       │
-└────────────────────────────────────────────────────────┘
-```
+It also performs a recovery check for the monitor files.
+
+If the <code>monitor</code> service is installed but required files are missing, the application can recreate:
+
+<pre><code>~/Monitor/api.py
+~/Monitor/web/
+~/Monitor/web.bat</code></pre>
+
+This recovery mechanism is designed to restore missing monitor components without requiring the complete installation process to be executed again.
+
+---
+
+## 🌐 Monitor Web Interface
+
+The monitoring installation creates the following directory:
+
+<pre><code>~/Monitor/</code></pre>
+
+with the main API located at:
+
+<pre><code>~/Monitor/api.py</code></pre>
+
+The application also creates:
+
+<pre><code>~/Monitor/web/</code></pre>
+
+and a Windows launcher:
+
+<pre><code>~/Monitor/web.bat</code></pre>
+
+The launcher opens Microsoft Edge in application/kiosk mode using:
+
+<pre><code>http://SERVER_NAME:8181/monitor</code></pre>
+
+The FastAPI application exposes the <code>/monitor</code> route and loads:
+
+<pre><code>web/index.html</code></pre>
+
+from the monitor installation directory.
 
 ---
 
 ## 🏗️ Architecture
 
-```text
-                    Linux Home Server
-                           │
-             ┌─────────────┴─────────────┐
-             │                           │
-             ▼                           ▼
-    Home Server Control Panel       QuakeWorld Server
-             │                           │
-     ┌───────┼────────┐                  │
-     │       │        │                  │
-   Samba   Conky  FileBrowser            │
-             │                           │
-             └──────────┐                │
-                        ▼                │
-                 Server Monitor ◄────────┘
-                        │
-                        ▼
-                 FastAPI /api/monitor
-                        │
-                     Port 8181
-```
+<pre><code>                         Linux Home Server
+                                │
+                  ┌─────────────┴─────────────┐
+                  │                           │
+                  ▼                           ▼
+        Home Server Control Panel       QuakeWorld Server
+                  │                           │
+        ┌─────────┼──────────┐                │
+        │         │          │                │
+      Samba     Conky    FileBrowser          │
+        │         │          │                │
+        └─────────┴──────────┘                │
+                  │                           │
+                  ▼                           │
+            Server Monitor ◄──────────────────┘
+                  │
+                  ▼
+              FastAPI
+                  │
+                  ├── /monitor
+                  │
+                  └── /api/monitor
+                         │
+                       :8181</code></pre>
 
-The Control Panel manages the main home server components and monitors the QuakeWorld server status.
+The graphical Control Panel manages the local server configuration and services.
 
-The dedicated **QuakeWorld Server Panel** is responsible for the administration of the QuakeWorld server itself.
+The <b>Server Monitor</b> runs independently as a <code>systemd</code> service and provides system information through FastAPI.
+
+The <b>QuakeWorld Server</b> is monitored by the API but is not administered by this application.
 
 ---
 
-## 📡 Monitoring API
+## 📂 Installation Structure
 
-The Server Monitor provides a local FastAPI endpoint on port **8181**.
+The Server Monitor uses the following structure:
 
-```text
-http://SERVER_NAME:8181/api/monitor
-```
+<pre><code>~/Monitor/
+├── api.py
+├── web/
+│   └── index.html
+├── web.bat
+└── .venv/
+    ├── bin/
+    └── ...</code></pre>
 
-The API provides plain-text key/value information for easy integration with monitoring applications and dashboards.
+The systemd service is installed at:
 
-### Main Metrics
+<pre><code>/etc/systemd/system/monitor.service</code></pre>
 
-```text
-CPU
-RAM
-SWAP
-DISK
-NETWORK
-FILEBROWSER
-TAILSCALE
-UPTIME
-QUAKEWORLD
-QUAKEWORLD_PORT
-```
+The service executes the API using the Python interpreter from the virtual environment.
 
 ---
 
@@ -281,11 +479,11 @@ QUAKEWORLD_PORT
 
 <tr>
 <td><b>GUI</b></td>
-<td>Tkinter</td>
+<td>Tkinter / ttk</td>
 </tr>
 
 <tr>
-<td><b>API</b></td>
+<td><b>API Framework</b></td>
 <td>FastAPI</td>
 </tr>
 
@@ -321,51 +519,70 @@ QUAKEWORLD_PORT
 
 <tr>
 <td><b>Game Server</b></td>
-<td>QuakeWorld Server 2.30</td>
+<td>QuakeWorld Server</td>
+</tr>
+
+<tr>
+<td><b>Service Management</b></td>
+<td>systemd</td>
+</tr>
+
+</table>
+
+The Server Monitor installation automatically installs the following Python packages inside its dedicated virtual environment:
+
+<pre><code>fastapi
+uvicorn
+psutil</code></pre>
+
+---
+
+## 📋 Configuration Files
+
+The Control Panel interacts with the following main files:
+
+<table>
+
+<tr>
+<td><b>Samba</b></td>
+<td><code>/etc/samba/smb.conf</code></td>
+</tr>
+
+<tr>
+<td><b>Conky</b></td>
+<td><code>~/.conkyrc</code></td>
+</tr>
+
+<tr>
+<td><b>FileBrowser</b></td>
+<td><code>/etc/systemd/system/filebrowser.service</code></td>
+</tr>
+
+<tr>
+<td><b>Monitor API</b></td>
+<td><code>~/Monitor/api.py</code></td>
+</tr>
+
+<tr>
+<td><b>Monitor Web</b></td>
+<td><code>~/Monitor/web/</code></td>
+</tr>
+
+<tr>
+<td><b>Monitor Launcher</b></td>
+<td><code>~/Monitor/web.bat</code></td>
+</tr>
+
+<tr>
+<td><b>Monitor Service</b></td>
+<td><code>/etc/systemd/system/monitor.service</code></td>
 </tr>
 
 </table>
 
 ---
 
-## 🔐 Administrator Access
-
-Operations that require elevated privileges use `sudo`.
-
-The Control Panel displays a graphical administrator password dialog when required.
-
-Administrative operations include:
-
-* Samba configuration
-* Service management
-* Server Monitor installation
-* Systemd configuration
-
----
-
-## ⚠️ Notes
-
-<ul>
-
-<li>Designed for lightweight Linux home servers.</li>
-
-<li>The application requires Python 3.</li>
-
-<li>Administrative operations require sudo privileges.</li>
-
-<li>The Server Monitor API runs on port <code>8181</code>.</li>
-
-<li>The QuakeWorld integration is used for monitoring the server status and port.</li>
-
-<li>QuakeWorld server administration is handled by the dedicated QuakeWorld Server Panel.</li>
-
-<li>The API is intended primarily for use within a trusted network.</li>
-
-</ul>
-
----
-
 <p align="center">
   <b>Home Server Control Panel</b><br>
-  Lightweight server management and monitoring.
+  Lightweight server management, service control and system monitoring.
 </p>

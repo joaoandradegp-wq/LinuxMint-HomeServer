@@ -151,6 +151,51 @@ The application also provides automatic installation and basic recovery of the S
 
 ---
 
+## 📋 Configuration Files
+
+The Control Panel interacts with the following main files:
+
+<table>
+
+<tr>
+<td><b>Samba</b></td>
+<td><code>/etc/samba/smb.conf</code></td>
+</tr>
+
+<tr>
+<td><b>Conky</b></td>
+<td><code>~/.conkyrc</code></td>
+</tr>
+
+<tr>
+<td><b>FileBrowser</b></td>
+<td><code>/etc/systemd/system/filebrowser.service</code></td>
+</tr>
+
+<tr>
+<td><b>Monitor API</b></td>
+<td><code>~/Monitor/api.py</code></td>
+</tr>
+
+<tr>
+<td><b>Monitor Web</b></td>
+<td><code>~/Monitor/web/</code></td>
+</tr>
+
+<tr>
+<td><b>Monitor Launcher</b></td>
+<td><code>~/Monitor/web.bat</code></td>
+</tr>
+
+<tr>
+<td><b>Monitor Service</b></td>
+<td><code>/etc/systemd/system/monitor.service</code></td>
+</tr>
+
+</table>
+
+---
+
 ## 📡 Server Monitor
 
 The <b>Server Monitor</b> is an integrated FastAPI service designed to provide system information to external dashboards and monitoring applications.
@@ -334,7 +379,7 @@ The exact values depend on the hardware, network configuration and services runn
 
 ---
 
-## 🎮 QuakeWorld Monitoring
+## <img width="32" alt="image" src="https://github.com/user-attachments/assets/051f3e0d-6c82-4089-9f54-f597b60108d3" /> QuakeWorld Monitoring
 
 The <b>Server Monitor</b> can detect the QuakeWorld Server process running on the system.
 
@@ -488,51 +533,6 @@ The <b>QuakeWorld Server</b> is monitored by the API but is not administered by 
 <tr>
 <td><b>Service Management</b></td>
 <td>systemd</td>
-</tr>
-
-</table>
-
----
-
-## 📋 Configuration Files
-
-The Control Panel interacts with the following main files:
-
-<table>
-
-<tr>
-<td><b>Samba</b></td>
-<td><code>/etc/samba/smb.conf</code></td>
-</tr>
-
-<tr>
-<td><b>Conky</b></td>
-<td><code>~/.conkyrc</code></td>
-</tr>
-
-<tr>
-<td><b>FileBrowser</b></td>
-<td><code>/etc/systemd/system/filebrowser.service</code></td>
-</tr>
-
-<tr>
-<td><b>Monitor API</b></td>
-<td><code>~/Monitor/api.py</code></td>
-</tr>
-
-<tr>
-<td><b>Monitor Web</b></td>
-<td><code>~/Monitor/web/</code></td>
-</tr>
-
-<tr>
-<td><b>Monitor Launcher</b></td>
-<td><code>~/Monitor/web.bat</code></td>
-</tr>
-
-<tr>
-<td><b>Monitor Service</b></td>
-<td><code>/etc/systemd/system/monitor.service</code></td>
 </tr>
 
 </table>

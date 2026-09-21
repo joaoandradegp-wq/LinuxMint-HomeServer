@@ -366,22 +366,6 @@ For server administration, configuration, start and stop controls, use the dedic
 
 ---
 
-## 🔄 Server Monitor Auto Refresh
-
-When the <b>Server Monitor</b> tab is selected, the application automatically checks the monitoring service status.
-
-It also performs a recovery check for the monitor files.
-
-If the <code>monitor</code> service is installed but required files are missing, the application can recreate:
-
-<pre><code>~/Monitor/api.py
-~/Monitor/web/
-~/Monitor/web.bat</code></pre>
-
-This recovery mechanism is designed to restore missing monitor components without requiring the complete installation process to be executed again.
-
----
-
 ## 🌐 Monitor Web Interface
 
 The monitoring installation creates the following directory:

@@ -184,13 +184,6 @@ QUAKEWORLD=ONLINE
 QUAKEWORLD_PORT=27500
 ```
 
-When the QuakeWorld server is not running:
-
-```text
-QUAKEWORLD=OFFLINE
-QUAKEWORLD_PORT=0
-```
-
 The detection is based on the **QuakeWorld Server (`qwsv`) process** and its configured port.
 
 The Home Server Control Panel is responsible for **monitoring** the QuakeWorld server.

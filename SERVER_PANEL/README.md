@@ -431,27 +431,6 @@ The <b>QuakeWorld Server</b> is monitored by the API but is not administered by 
 
 ---
 
-## 📂 Installation Structure
-
-The Server Monitor uses the following structure:
-
-<pre><code>~/Monitor/
-├── api.py
-├── web/
-│   └── index.html
-├── web.bat
-└── .venv/
-    ├── bin/
-    └── ...</code></pre>
-
-The systemd service is installed at:
-
-<pre><code>/etc/systemd/system/monitor.service</code></pre>
-
-The service executes the API using the Python interpreter from the virtual environment.
-
----
-
 ## 🛠️ Technologies
 
 <table>
@@ -512,12 +491,6 @@ The service executes the API using the Python interpreter from the virtual envir
 </tr>
 
 </table>
-
-The Server Monitor installation automatically installs the following Python packages inside its dedicated virtual environment:
-
-<pre><code>fastapi
-uvicorn
-psutil</code></pre>
 
 ---
 

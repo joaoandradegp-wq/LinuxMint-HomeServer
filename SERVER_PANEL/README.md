@@ -1,7 +1,7 @@
-<h1 align="center">🖥️ Home Server Control Panel</h1>
+<h1 align="center">🖥️ Server Panel</h1>
 
 <p align="center">
-Home Server Control Panel is a lightweight graphical management application designed to manage and monitor essential components of a Linux home server.
+Server Panel is a lightweight graphical management application designed to manage and monitor essential components of a Linux home server.
 It provides a simple Tkinter interface for managing Samba shares, Conky disk monitoring, FileBrowser, and an integrated Server Monitor API.
 </p>
 
@@ -17,7 +17,7 @@ It provides a simple Tkinter interface for managing Samba shares, Conky disk mon
 
 ## ✨ Overview
 
-The <b>Home Server Control Panel</b> provides a graphical interface for managing common services and configuration files on a lightweight Linux home server.
+The <b>Server Panel</b> provides a graphical interface for managing common services and configuration files on a lightweight Linux home server.
 
 The application contains four main management areas:
 

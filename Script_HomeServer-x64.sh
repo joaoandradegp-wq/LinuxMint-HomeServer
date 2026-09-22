@@ -1,16 +1,13 @@
 #!/bin/bash
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  HOME SERVER SETUP — Linux Mint 22.3 (Noble/Ubuntu 24.04 base) — v2.2
-#  v2.2: fixed FileBrowser status check in .conkyrc (grep -c active also
-#  matched "inactive" as a substring, so Conky always showed ONLINE)
+#  HOME SERVER SETUP - Linux Mint 22.3 (Noble/Ubuntu 24.04 base)
 #  Created by João Andrade aka Phobos
 #  Tested on: Linux Mint 22.3 XFCE x64
-#  GitHub: https://github.com/joaoandradegp-wq/LinuxMint_HomeServer
+#  GitHub: https://github.com/joaoandradegp-wq/LinuxMint-HomeServer
 #  Note: Run as root or with sudo. The real user is detected automatically.
 # ══════════════════════════════════════════════════════════════════════════════
 
-# ── Detects the real user (whoever ran the script, even via sudo) ─────────────
 if [ -n "$SUDO_USER" ]; then
     CURRENT_USER="$SUDO_USER"
 else
@@ -20,7 +17,6 @@ USER_HOME="$(eval echo ~"$CURRENT_USER")"
 
 echo "=== User detected: $CURRENT_USER (home: $USER_HOME) ==="
 
-# ── Log de execução ───────────────────────────────────────────────────────────
 LOG_FILE="$USER_HOME/homeserver-setup-$(date +%Y%m%d_%H%M%S).log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 echo "=== Log iniciado: $LOG_FILE ==="
@@ -35,7 +31,6 @@ sudo apt update && sudo apt upgrade -y
 echo "=== REMOVING UNNECESSARY PACKAGES ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-# --ignore-missing prevents errors if a package no longer exists in Mint 22
 sudo apt remove -y --ignore-missing \
     libreoffice* thunderbird hexchat \
     transmission-gtk pidgin drawing \
@@ -51,7 +46,6 @@ sudo systemctl disable bluetooth           2>/dev/null
 sudo systemctl disable cups                2>/dev/null
 sudo systemctl disable avahi-daemon        2>/dev/null
 
-# Added in v2.1: disable modem and speech services rarely needed on a server
 sudo systemctl disable ModemManager.service    2>/dev/null
 sudo systemctl stop    ModemManager.service    2>/dev/null
 
@@ -62,7 +56,6 @@ sudo systemctl stop    speech-dispatcher.service 2>/dev/null
 echo "=== DISABLING TRACKER (if present) ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-# tracker3 indexes files for desktop search — not useful on a headless server
 if command -v tracker3 >/dev/null 2>&1; then
     systemctl --user mask tracker-miner-fs-3.service 2>/dev/null
     systemctl --user stop tracker-miner-fs-3.service 2>/dev/null
@@ -75,7 +68,6 @@ fi
 echo "=== INSTALLING REQUIRED PACKAGES ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-# zram-config was renamed to zram-tools in Ubuntu 24.04 (Mint 22 base)
 sudo apt install -y \
     samba cifs-utils curl wget net-tools \
     lm-sensors hdparm dconf-cli conky-all \
@@ -85,8 +77,6 @@ sudo apt install -y \
 echo "=== CONFIGURING KERNEL MEMORY PARAMETERS ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-# v2.1: replaced the old 99-swappiness.conf with a single unified file.
-# Remove the old file if it exists to avoid duplicate/conflicting settings.
 sudo rm -f /etc/sysctl.d/99-swappiness.conf
 
 sudo tee /etc/sysctl.d/99-homeserver.conf > /dev/null << EOF
@@ -131,7 +121,6 @@ sudo apt install -y \
 echo "=== CONFIGURING HDD SCHEDULER ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-# Mint 22 uses kernel 6.x; "deadline" was renamed to "mq-deadline" in kernel 5+
 sudo bash -c 'cat > /etc/udev/rules.d/60-ioschedulers.rules << EOF
 ACTION=="add|change", KERNEL=="sda", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="mq-deadline"
 ACTION=="add|change", KERNEL=="sdb", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="mq-deadline"
@@ -161,8 +150,6 @@ sudo journalctl --vacuum-size=50M
 echo "=== DISABLING DESKTOP ANIMATIONS ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-# Mint 22 XFCE: only xfconf-query is relevant.
-# GNOME/Cinnamon commands are silenced with 2>/dev/null.
 gsettings set org.gnome.desktop.interface enable-animations false 2>/dev/null
 gsettings set org.cinnamon desktop-effects false                  2>/dev/null
 gsettings set org.cinnamon.muffin desktop-effects false           2>/dev/null
@@ -172,7 +159,6 @@ xfconf-query -c xfwm4 -p /general/use_compositing -s false       2>/dev/null
 echo "=== CONFIGURING NOATIME ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-# Idempotent: only write a backup and modify fstab if noatime isn't already set
 if ! grep -q noatime /etc/fstab; then
     sudo cp /etc/fstab /etc/fstab.backup
     sudo sed -i 's/errors=remount-ro/errors=remount-ro,noatime,nodiratime/' /etc/fstab
@@ -197,9 +183,6 @@ chmod 755 "$USER_HOME/Server"
 echo "=== CONFIGURING SAMBA ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-# Idempotent: always rewrites the full config from scratch.
-# socket options intentionally omitted — modern kernels handle TCP_NODELAY
-# automatically and Samba 4.x deprecated manual tuning of this option.
 cp /etc/samba/smb.conf /etc/samba/smb.conf.bak 2>/dev/null || true
 
 sudo bash -c "cat > /etc/samba/smb.conf << EOF
@@ -316,14 +299,11 @@ chmod 755 "$USER_HOME/Server"
 echo "=== CONFIGURING FILEBROWSER USER ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-# Remove banco antigo para garantir estado limpo
 rm -f "$USER_HOME/filebrowser.db"
 
-# Inicializa o banco corretamente
 filebrowser config init -d "$USER_HOME/filebrowser.db"
 filebrowser config set -d "$USER_HOME/filebrowser.db" --root "$USER_HOME/Server"
 
-# Remove o admin padrão e cria o usuário correto
 filebrowser users rm admin -d "$USER_HOME/filebrowser.db" 2>/dev/null || true
 
 filebrowser users add "$CURRENT_USER" "$FB_PASS" \
@@ -370,8 +350,6 @@ sudo sensors-detect --auto || true
 echo "=== CONFIGURING HDD SPINDOWN AND POWER MANAGEMENT ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-# v2.1: added apm = 254 to keep APM active without aggressive power-saving
-# spindown_time = 180 → approx. 15 minutes (180 × 5 s)
 sudo tee /etc/hdparm.conf > /dev/null << EOF
 /dev/sda {
     spindown_time = 180
@@ -388,8 +366,6 @@ EOF
 echo "=== INSTALLING ANYDESK ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-# Mint 22 is 64-bit (noble/jammy base). apt-key is deprecated;
-# using the modern method with keyring in /etc/apt/keyrings/.
 sudo install -m 0755 -d /etc/apt/keyrings
 
 wget -qO - https://keys.anydesk.com/repos/DEB-GPG-KEY \
@@ -411,7 +387,6 @@ fi
 echo "=== CONFIGURING CONKY ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-# Conky 1.19+ (Mint 22) removed use_xft; font is configured via 'font' only.
 cat > "$USER_HOME/.conkyrc" << 'EOF'
 conky.config = {
     alignment = 'top_right',
@@ -596,7 +571,7 @@ HOSTNAME_LOCAL=$(hostname)
 TAILSCALE_IP=$(tailscale ip -4)
 
 echo "═════════════════════════════════════════════"
-echo "  SETUP COMPLETED — v2.1"
+echo "  SETUP COMPLETED "
 echo "═════════════════════════════════════════════"
 echo ""
 echo "  Tailscale IP: $TAILSCALE_IP"

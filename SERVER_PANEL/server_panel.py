@@ -954,9 +954,6 @@ def update_monitor_buttons(installed, active):
 
 
 def ensure_monitor_files():
-    """Auto-heals api.py, web/ and web.bat if they were accidentally deleted.
-    Returns (recreated, error) where recreated is a list of filenames that
-    were restored and error is None or a message string."""
 
     recreated = []
 

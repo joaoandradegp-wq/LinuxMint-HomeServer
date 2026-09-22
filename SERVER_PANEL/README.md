@@ -382,36 +382,6 @@ For server administration, configuration, start and stop controls, use the dedic
 
 ---
 
-## 🌐 Monitor Web Interface
-
-The monitoring installation creates the following directory:
-
-<pre><code>~/Monitor/</code></pre>
-
-with the main API located at:
-
-<pre><code>~/Monitor/api.py</code></pre>
-
-The application also creates:
-
-<pre><code>~/Monitor/web/</code></pre>
-
-and a Windows launcher:
-
-<pre><code>~/Monitor/web.bat</code></pre>
-
-The launcher opens Microsoft Edge in application/kiosk mode using:
-
-<pre><code>http://SERVER_NAME:8181/monitor</code></pre>
-
-The FastAPI application exposes the <code>/monitor</code> route and loads:
-
-<pre><code>web/index.html</code></pre>
-
-from the monitor installation directory.
-
----
-
 ## 🏗️ Architecture
 
 <pre><code>                         Linux Home Server

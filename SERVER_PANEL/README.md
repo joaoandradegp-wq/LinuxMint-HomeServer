@@ -196,35 +196,6 @@ The Control Panel interacts with the following main files:
 
 ---
 
-## 📡 Server Monitor
-
-The <b>Server Monitor</b> is an integrated FastAPI service designed to provide system information to external dashboards and monitoring applications.
-
-The Control Panel can install the complete monitoring environment directly from the graphical interface.
-
-The installation process performs the following steps:
-
-<pre><code>1. Update APT package information
-2. Install Python 3, python3-venv, python3-pip and curl
-3. Create api.py and monitoring directories
-4. Create the Python virtual environment
-5. Upgrade pip
-6. Install FastAPI, Uvicorn and psutil
-7. Create the systemd service
-8. Reload systemd
-9. Enable the monitor service
-10. Start the monitor service</code></pre>
-
-The installation progress is displayed directly in the Control Panel.
-
-The monitoring service is registered as:
-
-<pre><code>monitor.service</code></pre>
-
-The service runs automatically and is configured to restart if it stops.
-
----
-
 ## 📊 Monitoring API
 
 The Server Monitor exposes a plain-text endpoint:

@@ -3,8 +3,6 @@ set -e
 
 # ----------------------------------------------------------------------
 # Server Panel Installer for Linux
-# Downloads the source code, builds it with PyInstaller and installs
-# the resulting binary
 # ----------------------------------------------------------------------
 
 REPO_RAW="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/SERVER_PANEL"
@@ -62,9 +60,6 @@ echo ""
 echo "Installation complete!"
 echo "Binary: $INSTALL_DIR/server_panel"
 
-# ----------------------------------------------------------------------
-# Desktop icon
-# ----------------------------------------------------------------------
 DESKTOP_DIR="$(xdg-user-dir DESKTOP 2>/dev/null || echo "$HOME/Desktop")"
 mkdir -p "$DESKTOP_DIR"
 DESKTOP_FILE="$DESKTOP_DIR/server_panel.desktop"
@@ -82,8 +77,6 @@ Categories=Utility;
 EOL
 
 chmod +x "$DESKTOP_FILE"
-# Marks the .desktop file as trusted so it can be launched with a double-click
-# on file managers that check this (Nautilus/GNOME, Cinnamon/Nemo).
 gio set "$DESKTOP_FILE" metadata::trusted true 2>/dev/null || true
 
 echo "Desktop icon: $DESKTOP_FILE"

@@ -1,4 +1,5 @@
-<h1 align="center">🖥️ Lightweight Home Server</h1>
+<h1 align="center"><img width="500" alt="image" src="https://github.com/user-attachments/assets/73b6b519-5af7-4bb3-8346-5e91be7a7f7f" />
+</h1>
 
 <p align="center">
 Lightweight Home Server is an automated setup script that transforms old or low-spec machines into efficient always-on home servers.

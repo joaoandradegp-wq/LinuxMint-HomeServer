@@ -406,7 +406,7 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 
 ---
 
-## 📸 Linux Mint Preview
+## 📸 Preview
 
 <p align="center">
   <img width="500" alt="image" src="https://github.com/user-attachments/assets/4a9a264e-706a-40cf-89d2-58ab36962737" />
@@ -414,7 +414,7 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 
 ---
 
-## 📸 Personal Server Project (VHS Case)
+## 📸 Server Project (VHS Case)
 
 <p align="center">
 <img width="250" src="https://github.com/user-attachments/assets/865475c4-c716-4783-b014-eb803b48e3a4" />

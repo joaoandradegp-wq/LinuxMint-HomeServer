@@ -8,6 +8,7 @@ import re
 import socket
 import os
 import getpass
+import time
 import urllib.request
 
 ########################################################
@@ -15,7 +16,7 @@ import urllib.request
 ########################################################
 
 DIALOG_WIDTH = 420
-DIALOG_HEIGHT = 220
+DIALOG_HEIGHT = 270
 
 STATUS_OK = "#0a7d2c"
 STATUS_ERROR = "#c0392b"
@@ -28,6 +29,22 @@ SUDO_PASSWORD = None
 
 # Samba: extra options of each share are kept as they are when saving
 SHARE_OPTS = {}
+
+# Save buttons stay disabled until something is changed
+btn_save_samba = None
+btn_save_conky = None
+
+
+def set_save_state(button, dirty):
+
+    if button is None:
+        return
+
+    if dirty:
+        button.state(["!disabled"])
+    else:
+        button.state(["disabled"])
+
 GLOBAL_BODY = None
 
 DEFAULT_GLOBAL_BODY = """
@@ -444,7 +461,7 @@ def restart_service(name):
 
 def build_shares_tab(parent):
 
-    global tree_shares
+    global tree_shares, btn_save_samba
 
     content, toolbar = build_page(
         parent,
@@ -469,7 +486,10 @@ def build_shares_tab(parent):
 
     tree_shares.bind("<Double-1>", on_double_click)
 
-    ttk.Button(toolbar, text="Save", command=save_samba).pack(side="right")
+    btn_save_samba = ttk.Button(toolbar, text="Save", command=save_samba)
+    btn_save_samba.pack(side="right")
+    set_save_state(btn_save_samba, False)
+
     ttk.Button(toolbar, text="Delete", command=delete_share).pack(side="right", padx=5)
     ttk.Button(toolbar, text="Edit", command=lambda: edit_share(True)).pack(side="right", padx=5)
     ttk.Button(toolbar, text="Add", command=edit_share).pack(side="right", padx=5)
@@ -482,6 +502,8 @@ def load_samba():
     tree_shares.delete(*tree_shares.get_children())
     SHARE_OPTS.clear()
     GLOBAL_BODY = None
+
+    set_save_state(btn_save_samba, False)
 
     path = Path("/etc/samba/smb.conf")
 
@@ -544,6 +566,10 @@ def edit_share(edit=False):
 
     win = open_dialog("Share")
 
+    # buttons first, so they are never cut off by the form
+    btns = ttk.Frame(win, padding=(20, 12))
+    btns.pack(side="bottom", fill="x")
+
     frame = ttk.Frame(win, padding=20)
     frame.pack(fill="both", expand=True)
 
@@ -564,9 +590,6 @@ def edit_share(edit=False):
         text="The folder will be created automatically if it doesn't exist."
     ).pack(anchor="w")
 
-    btns = ttk.Frame(win, padding=(20, 12))
-    btns.pack(side="bottom", fill="x")
-
     def save():
 
         new_name = e_name.get().strip()
@@ -576,14 +599,22 @@ def edit_share(edit=False):
             messagebox.showwarning("Warning", "Please fill in both fields")
             return
 
-        ok1, m1 = run_sudo(["mkdir", "-p", new_path])
-        ok2, m2 = run_sudo(["chmod", "755", new_path])
+        values = (new_name, new_path)
 
-        if not (ok1 and ok2):
-            messagebox.showerror("Error", f"Failed to prepare the folder:\n{m1 or m2}")
+        # nothing changed: just closes, Save stays disabled
+        if edit and (str(name), str(path_value)) == values:
+            win.destroy()
             return
 
-        values = (new_name, new_path)
+        # only touches the folder when it is new or its path changed
+        if not edit or str(path_value) != new_path:
+
+            ok1, m1 = run_sudo(["mkdir", "-p", new_path])
+            ok2, m2 = run_sudo(["chmod", "755", new_path])
+
+            if not (ok1 and ok2):
+                messagebox.showerror("Error", f"Failed to prepare the folder:\n{m1 or m2}")
+                return
 
         if edit:
             tree_shares.item(item, values=values)
@@ -595,6 +626,8 @@ def edit_share(edit=False):
                 "guest ok = no",
                 f"valid users = {getpass.getuser()}",
             ]
+
+        set_save_state(btn_save_samba, True)
 
         win.destroy()
 
@@ -614,6 +647,7 @@ def delete_share():
     if sel:
         SHARE_OPTS.pop(sel[0], None)
         tree_shares.delete(sel[0])
+        set_save_state(btn_save_samba, True)
 
 
 def save_samba():
@@ -659,6 +693,8 @@ def save_samba():
         messagebox.showerror("Error", f"Failed to apply the Samba configuration:\n{m1 or m2}")
         return
 
+    set_save_state(btn_save_samba, False)
+
     messagebox.showinfo("Saved", "Samba configuration updated")
 
 
@@ -668,7 +704,7 @@ def save_samba():
 
 def build_conky_tab(parent):
 
-    global tree_conky
+    global tree_conky, btn_save_conky
 
     content, toolbar = build_page(
         parent,
@@ -693,15 +729,23 @@ def build_conky_tab(parent):
 
     tree_conky.bind("<Double-1>", on_double_click)
 
-    ttk.Button(toolbar, text="Save", command=save_conky).pack(side="right")
+    btn_save_conky = ttk.Button(toolbar, text="Save", command=save_conky)
+    btn_save_conky.pack(side="right")
+    set_save_state(btn_save_conky, False)
+
     ttk.Button(toolbar, text="Delete", command=delete_conky).pack(side="right", padx=5)
     ttk.Button(toolbar, text="Edit", command=lambda: edit_conky(True)).pack(side="right", padx=5)
     ttk.Button(toolbar, text="Add", command=edit_conky).pack(side="right", padx=5)
+
+    # closes and reopens Conky with the current configuration
+    ttk.Button(toolbar, text="Refresh", command=refresh_conky).pack(side="left")
 
 
 def load_conky():
 
     tree_conky.delete(*tree_conky.get_children())
+
+    set_save_state(btn_save_conky, False)
 
     path = Path.home() / ".conkyrc"
 
@@ -743,6 +787,10 @@ def edit_conky(edit=False):
 
     win = open_dialog("Conky Disk")
 
+    # buttons first, so they are never cut off by the form
+    btns = ttk.Frame(win, padding=(20, 12))
+    btns.pack(side="bottom", fill="x")
+
     frame = ttk.Frame(win, padding=20)
     frame.pack(fill="both", expand=True)
 
@@ -763,9 +811,6 @@ def edit_conky(edit=False):
         text="This disk will be displayed in the Conky panel."
     ).pack(anchor="w")
 
-    btns = ttk.Frame(win, padding=(20, 12))
-    btns.pack(side="bottom", fill="x")
-
     def save():
 
         new_name = e_name.get().strip()
@@ -775,12 +820,19 @@ def edit_conky(edit=False):
             messagebox.showwarning("Warning", "Please fill in both fields")
             return
 
+        # nothing changed: just closes, Save stays disabled
+        if edit and (str(name), str(path_value)) == (new_name, new_path):
+            win.destroy()
+            return
+
         values = (idx, new_name, new_path)
 
         if edit:
             tree_conky.item(item, values=values)
         else:
             tree_conky.insert("", "end", values=values)
+
+        set_save_state(btn_save_conky, True)
 
         win.destroy()
 
@@ -799,6 +851,7 @@ def delete_conky():
 
     if sel:
         tree_conky.delete(sel[0])
+        set_save_state(btn_save_conky, True)
 
 
 def save_conky():
@@ -837,7 +890,18 @@ def save_conky():
     subprocess.run(["pkill", "conky"])
     subprocess.Popen(["conky"])
 
+    set_save_state(btn_save_conky, False)
+
     messagebox.showinfo("Saved", "Conky updated")
+
+
+def refresh_conky():
+
+    subprocess.run(["pkill", "conky"])
+
+    time.sleep(0.5)
+
+    subprocess.Popen(["conky"])
 
 ########################################################
 # FILEBROWSER TAB

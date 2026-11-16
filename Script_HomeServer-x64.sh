@@ -190,7 +190,7 @@ sudo bash -c "cat > /etc/samba/smb.conf << EOF
 workgroup = WORKGROUP
 server string = Linux Home Server
 security = user
-map to guest = bad user
+map to guest = never
 min protocol = SMB2
 deadtime = 15
 aio read size = 1
@@ -200,6 +200,7 @@ aio write size = 1
 path = $USER_HOME/Server
 browseable = yes
 read only = no
+guest ok = no
 valid users = $CURRENT_USER
 EOF"
 
@@ -515,7 +516,7 @@ Version=1.0
 Type=Application
 Name=Server Panel
 Comment=Server Panel
-Exec="/home/phobos/Server Panel/dist/server_panel"
+Exec="$USER_HOME/Server Panel/dist/server_panel"
 Icon=unity-tweak-tool
 Terminal=false
 Categories=Utility;

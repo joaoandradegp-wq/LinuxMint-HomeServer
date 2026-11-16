@@ -7,6 +7,7 @@ import subprocess
 import re
 import socket
 import os
+import getpass
 import urllib.request
 
 ########################################################
@@ -24,6 +25,20 @@ STATUS_ERROR = "#c0392b"
 ########################################################
 
 SUDO_PASSWORD = None
+
+# Samba: extra options of each share are kept as they are when saving
+SHARE_OPTS = {}
+GLOBAL_BODY = None
+
+DEFAULT_GLOBAL_BODY = """
+workgroup = WORKGROUP
+server string = Linux Home Server
+
+security = user
+map to guest = never
+
+min protocol = SMB2
+"""
 
 FILEBROWSER_SERVICE = "filebrowser"
 MONITOR_SERVICE = "monitor"
@@ -462,7 +477,11 @@ def build_shares_tab(parent):
 
 def load_samba():
 
+    global GLOBAL_BODY
+
     tree_shares.delete(*tree_shares.get_children())
+    SHARE_OPTS.clear()
+    GLOBAL_BODY = None
 
     path = Path("/etc/samba/smb.conf")
 
@@ -477,22 +496,33 @@ def load_samba():
         re.S
     )
 
-    ignore = ["global", "printers", "print$"]
+    ignore = ["printers", "print$"]
 
     for s in shares:
 
         name = s.group(1).strip()
+        body = s.group(2)
+
+        if name.lower() == "global":
+            GLOBAL_BODY = body.strip("\n")
+            continue
 
         if name.lower() in ignore:
             continue
 
-        body = s.group(2)
-
-        m = re.search(r'path\s*=\s*(.+)', body)
+        m = re.search(r'^\s*path\s*=\s*(.+)', body, re.M)
 
         path_value = m.group(1).strip() if m else ""
 
-        tree_shares.insert("", "end", values=(name, path_value))
+        # keeps every other option of the share exactly as it is in the file
+        opts = [
+            line.rstrip()
+            for line in body.splitlines()
+            if line.strip() and not re.match(r'^\s*path\s*=', line)
+        ]
+
+        iid = tree_shares.insert("", "end", values=(name, path_value))
+        SHARE_OPTS[iid] = opts
 
 
 def edit_share(edit=False):
@@ -558,7 +588,13 @@ def edit_share(edit=False):
         if edit:
             tree_shares.item(item, values=values)
         else:
-            tree_shares.insert("", "end", values=values)
+            iid = tree_shares.insert("", "end", values=values)
+            SHARE_OPTS[iid] = [
+                "browseable = yes",
+                "read only = no",
+                "guest ok = no",
+                f"valid users = {getpass.getuser()}",
+            ]
 
         win.destroy()
 
@@ -576,41 +612,45 @@ def delete_share():
     sel = tree_shares.selection()
 
     if sel:
+        SHARE_OPTS.pop(sel[0], None)
         tree_shares.delete(sel[0])
 
 
 def save_samba():
 
-    txt = """
-[global]
+    global_body = GLOBAL_BODY if GLOBAL_BODY else DEFAULT_GLOBAL_BODY.strip("\n")
 
-workgroup = WORKGROUP
-server string = K7 Server
-
-security = user
-map to guest = bad user
-
-min protocol = SMB2
-
-"""
+    txt = "[global]\n" + global_body + "\n"
 
     for item in tree_shares.get_children():
 
         name, path_value = tree_shares.item(item)["values"]
 
-        txt += f"""
+        opts = SHARE_OPTS.get(item) or [
+            "browseable = yes",
+            "read only = no",
+            "guest ok = no",
+            f"valid users = {getpass.getuser()}",
+        ]
 
-[{name}]
-path = {path_value}
-
-browseable = yes
-read only = no
-
-guest ok = yes
-
-"""
+        txt += f"\n\n[{name}]\npath = {path_value}\n" + "\n".join(opts) + "\n"
 
     Path("/tmp/smb.conf").write_text(txt)
+
+    # validates the syntax before touching the real file
+    try:
+        check = subprocess.run(
+            ["testparm", "-s", "/tmp/smb.conf"],
+            capture_output=True,
+            text=True
+        )
+        if check.returncode != 0:
+            messagebox.showerror("Error", f"Invalid Samba configuration:\n{check.stderr}")
+            return
+    except FileNotFoundError:
+        pass
+
+    run_sudo(["cp", "/etc/samba/smb.conf", "/etc/samba/smb.conf.bak"])
 
     ok1, m1 = run_sudo(["cp", "/tmp/smb.conf", "/etc/samba/smb.conf"])
     ok2, m2 = run_sudo(["systemctl", "restart", "smbd"])
